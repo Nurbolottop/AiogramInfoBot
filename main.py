@@ -3,6 +3,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from pytube import YouTube
+from pytube.__main__ import YouTube
 
 import config
 import sqlite3
@@ -17,6 +18,8 @@ cur.execute("""CREATE TABLE IF NOT EXISTS users(
     );
     """)
 connect.commit()
+
+
 
 bot = Bot(config.token)
 dp = Dispatcher(bot, storage=MemoryStorage())
@@ -33,8 +36,7 @@ class InfoVideo(StatesGroup):
     info = State()
 
 def infod(url):
-    yt_info = YouTube(url)
-    yt_info.description
+    YouTube(url)
         
 
 
@@ -137,9 +139,15 @@ async def video_download(message: types.Message):
     await InfoVideo.info.set()
 
 @dp.message_handler(state=InfoVideo.info)
-async def info(message: types.Message,state :FSMContext,):
-        yt_infoa = infod()
-        await message.answer(f"desc: {yt_infoa.description}")
+async def info_video(message: types.Message, state: FSMContext):
+    res = message.text.split()
+    video = YouTube(str(res))
+    print(video.description)
+    await message.reply(f"Вот вся информация -->>>\nАвтор видео: {video.author}.\n Просмотры: {video.views}.\n Дата выхода: {video.publish_date}.\nДлина видео: {video.length}сек.\n Описание:\n {video.description}.")
+    await state.finish()
+
+# @dp.message_handler(state=InfoVideo.info)
+# async def info(message: types.Message,state :FSMContext,):
     
 
 executor.start_polling(dp)
