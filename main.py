@@ -146,8 +146,9 @@ async def info_video(message: types.Message, state: FSMContext):
     await message.reply(f"Вот вся информация -->>>\nАвтор видео: {video.author}.\n Просмотры: {video.views}.\n Дата выхода: {video.publish_date}.\nДлина видео: {video.length}сек.\n Описание:\n {video.description}.")
     await state.finish()
 
-# @dp.message_handler(state=InfoVideo.info)
-# async def info(message: types.Message,state :FSMContext,):
-    
+
+@dp.message_handler()
+async def not_found(message: types.Message):
+    await message.reply("Я вас не понял введите /help")
 
 executor.start_polling(dp)
